@@ -216,10 +216,12 @@ for k in range(5):
 # air-defence tracer
 line(hx0+6*SS, horizon-4*SS, hx0+2*SS, hy0+16*SS, hex2rgb('#7fd0ff'), SS)
 # label
-rect(hx0+2*SS, hy0+2*SS, hx0+2*SS+text_w(KYIV,2*SS)+6*SS, hy0+2*SS+2*SS*7+4*SS, INK)
-text(hx0+5*SS, hy0+4*SS, KYIV, hex2rgb('#f2e9d0'), 2*SS)
+ks = 3*SS
+while text_w(KYIV, ks) > (hx1-hx0)-14*SS and ks > SS: ks -= SS
+rect(hx0+2*SS, hy0+2*SS, hx0+2*SS+text_w(KYIV,ks)+6*SS, hy0+2*SS+ks*7+4*SS, INK)
+text(hx0+5*SS, hy0+4*SS, KYIV, hex2rgb('#f2e9d0'), ks)
 hline(hx0, hx1, hy1, INK, 2*SS)
-fit_text(hx0, hy1+3*SS, '400+ DRONES, 110 MISSILES FIRED OVERNIGHT', GRAY, 3*SS, hx1-hx0)
+fit_text(hx0, hy1+3*SS, '400+ DRONES, 110 MISSILES FIRED OVERNIGHT', GRAY, 4*SS, hx1-hx0)
 
 # --- right column: stat band + secondary heroes ---
 rx0 = hx1 + 10*SS
@@ -229,10 +231,10 @@ def statband(yy, label, value, vcol):
     rect(rx0, yy, rx1, yy+20*SS, INK)
     rect(rx0+SS, yy+SS, rx0+8*SS, yy+19*SS, vcol)
     text(rx0+12*SS, yy+4*SS, label, PAPER, 3*SS)
-    vw = text_w(value, 4*SS)
+    vw = text_w(value, 5*SS)
     lw = text_w(label, 3*SS)
     if vw + lw + 20*SS <= (rx1-rx0):
-        right_text(rx1-4*SS, yy+2*SS, value, vcol, 4*SS)
+        right_text(rx1-4*SS, yy+1*SS, value, vcol, 5*SS)
     return yy + 24*SS
 
 ry = statband(ry, 'NIKKEI', '-5.1%', RED)
@@ -257,9 +259,10 @@ for mx,my in [(0.45,0.55),(0.58,0.42),(0.36,0.38)]:
     ix, iy = rx0+int((rx1-rx0)*mx), py0+int((py1-py0)*my)
     line(ix-4*SS, iy-4*SS, ix+4*SS, iy+4*SS, RED, 3*SS)
     line(ix-4*SS, iy+4*SS, ix+4*SS, iy-4*SS, RED, 3*SS)
-rect(rx0+2*SS, py0+2*SS, rx0+2*SS+text_w('RUSSIAN MISSILES IN POLAND',2*SS)+4*SS, py0+2*SS+2*SS*7+3*SS, BLUE)
-text(rx0+4*SS, py0+3*SS, 'RUSSIAN MISSILES IN POLAND', PAPER, 2*SS)
-def rtext(yy, s, c=GRAY, size=3*SS):
+lbl = 'MISSILES IN POLAND'
+rect(rx0+2*SS, py0+2*SS, rx0+2*SS+text_w(lbl,3*SS)+4*SS, py0+2*SS+3*SS*7+3*SS, BLUE)
+text(rx0+4*SS, py0+3*SS, lbl, PAPER, 3*SS)
+def rtext(yy, s, c=GRAY, size=4*SS):
     words = s.split(); linebuf = ''
     for w_ in words:
         cand = (linebuf+' '+w_).strip()
@@ -273,7 +276,7 @@ def rtext(yy, s, c=GRAY, size=3*SS):
     return yy
 
 ry = py1 + 4*SS
-ry = rtext(ry, '2 CRUISE MISSILES + A DRONE HIT DURING NATO-AREA EXERCISES') + 3*SS
+ry = rtext(ry, '2 MISSILES + A DRONE HIT NATO-AREA DRILLS') + 3*SS
 hline(rx0, rx1, ry, RULE, SS); ry += 4*SS
 
 # Hormuz hero: tankers + flames on sea
@@ -292,10 +295,11 @@ for k,(txf, tyf) in enumerate([(0.25,0.72),(0.58,0.66),(0.82,0.74)]):
     # fire
     disc(tx_, ty_-8*SS, 5*SS, hex2rgb('#e86a1f'))
     disc(tx_, ty_-8*SS, 2*SS, hex2rgb('#ffd166'))
-rect(rx0+2*SS, ty0+2*SS, rx0+2*SS+text_w('3 TANKERS HIT AT HORMUZ',2*SS)+4*SS, ty0+2*SS+2*SS*7+3*SS, DKRED)
-text(rx0+4*SS, ty0+3*SS, '3 TANKERS HIT AT HORMUZ', PAPER, 2*SS)
+lbl = '3 TANKERS HIT'
+rect(rx0+2*SS, ty0+2*SS, rx0+2*SS+text_w(lbl,3*SS)+4*SS, ty0+2*SS+3*SS*7+3*SS, DKRED)
+text(rx0+4*SS, ty0+3*SS, lbl, PAPER, 3*SS)
 ry = ty1 + 4*SS
-ry = rtext(ry, 'IRAN-US WAR: MQ-9 DRONE DOWNED; QATAR MEDIATION STALLED') + 3*SS
+ry = rtext(ry, 'IRAN-US WAR: MQ-9 DOWNED; QATAR TALKS STALL') + 3*SS
 
 bottom_hero_end = max(hy1 + 3*SS + 3*SS*7, ry)
 y = bottom_hero_end + 4*SS
@@ -304,37 +308,34 @@ hline(M, SW-M, y, INK, 2*SS); y += 5*SS
 # ---- story grid: 5 columns x N rows of briefs with big tags ----
 stories = [
  ('MIDEAST','HOUTHI MISSILES AT RIYADH INTERCEPTED - 3RD DAY OF ALERTS', RED),
- ('MIDEAST','IRGC SHOWS NEW UNDERGROUND LIQUID-FUEL LAUNCHER', RED),
- ('EUROPE','NATO CHIEF: POLAND VIOLATION "GRAVE" - RUTTE TO VISIT', BLUE),
- ('EUROPE','KYIV: NIGHT RAIDS KILL 8; KRYVYI RIH TOLL RISES TO 2 DEAD 60 WOUNDED', BLUE),
- ('AMERICAS','S+P 500 AND DOW IN CORRECTION ON AI SELLOFF - ANTHROPIC IPO FLOPS', GREEN),
- ('AMERICAS','NVIDIA -14%: SEC PROBE REPORTED AFTER HUANG EXIT REPORT', GREEN),
- ('AMERICAS','BRAZIL: STOCKS -13.7% AND REAL SLIDES AFTER LULA RUNOFF WIN', GREEN),
- ('ASIA','GTA6 HITS $3.79BN FIRST-DAY SALES - ENTERTAINMENT RECORD', YELLOW),
- ('ASIA','SOUTH KOREA: RULING PARTY MOVES TO IMPEACH CHIEF JUSTICE', YELLOW),
- ('ASIA','JAPAN GDP -0.1% ANNUALIZED; BOJ HOLD SEEN, DECEMBER HIKE LIVE', YELLOW),
- ('ASIA','HONG KONG ENTERS BEAR MARKET: -20% FROM 2026 HIGH', YELLOW),
- ('EUROPE','ECB HOLDS DEPOSIT RATE AT 2.5% - DECEMBER HIKE IN PLAY', BLUE),
- ('AMERICAS','TRUMP SHENZHEN TRILATERAL: PEACE TALKS "MORE FLAIR THAN SUBSTANCE"', GREEN),
- ('MIDEAST','SAUDI STRIKES HODEIDAH AFTER PIF TOWER DAMAGED TUESDAY', RED),
- ('AFRICA','ETHIOPIA-ERITREA BORDER FIRE FLARES; RED SEA ACCESS ROW', RED),
- ('AFRICA','SUDAN: UN COUNTS 2230 CIVILIANS KILLED IN 2026 - MOSTLY BY DRONES', RED),
- ('AFRICA','UGANDA: BESIGYE TREASON HEARING SET FOR NOV 25', RED),
- ('ASIA','CHINA Q3 GDP +4.5% BEATS; EXPORTS +36% ON AI DEMAND', YELLOW),
- ('AMERICAS','INDIA: JIO IPO DRAWS 22X DEMAND AHEAD OF LISTING', GREEN),
- ('EUROPE','DENMARK EXPPELS RUSSIAN DEFENCE ATTACHE OVER PLOT', BLUE),
- ('MIDEAST','US DENIES IRAN CLAIM OF F-16 DOWNING OVER GULF', RED),
- ('ASIA','JAPAN WEIGHS 60 TRILLION YEN 5-YEAR DEFENSE PLAN', YELLOW),
- ('EUROPE','UK RETAIL SALES +0.7% ON EMERGENCY-STOCKPILING DRIVE', BLUE),
- ('AMERICAS','ANTHROPIC IPO DREW $120BN RETAIL DEMAND, BEAT SPACEX RECORD', GREEN),
- ('AFRICA','GUINEA BANS BURKINA BROADCASTS; MINING RISK RISES', RED),
- ('ASIA','KOSPI -5.2% AND NIKKEI AT 6-MONTH LOW ON SAMSUNG MISS', YELLOW),
- ('EUROPE','FRANCE SOVEREIGN SPREADS WIDEN; FISCAL CLOUD OVER 2027', BLUE),
- ('AMERICAS','US FED HOLDS 3.75-4% IN 10-2 VOTE - FEWER DECISIONS PLANNED', GREEN),
+ ('MIDEAST','IRGC SHOWS NEW UNDERGROUND MISSILE LAUNCHER', RED),
+ ('EUROPE','NATO: POLAND VIOLATION "GRAVE" - RUTTE TO VISIT', BLUE),
+ ('EUROPE','KRYVYI RIH STRUCK: 2 DEAD, 60 WOUNDED', BLUE),
+ ('AMERICAS','S+P 500 AND DOW IN CORRECTION ON AI SELLOFF', GREEN),
+ ('AMERICAS','NVIDIA -14% ON SEC PROBE REPORT', GREEN),
+ ('AMERICAS','BRAZIL STOCKS -13.7% AFTER LULA WIN', GREEN),
+ ('ASIA','GTA6 SELLS $3.79BN DAY ONE - RECORD', YELLOW),
+ ('ASIA','KOREA PARTY MOVES TO IMPEACH TOP JUSTICE', YELLOW),
+ ('ASIA','JAPAN GDP -0.1%; BOJ DECEMBER HIKE LIVE', YELLOW),
+ ('ASIA','HONG KONG ENTERS BEAR MARKET -20%', YELLOW),
+ ('EUROPE','ECB HOLDS 2.5%; DECEMBER HIKE IN PLAY', BLUE),
+ ('AMERICAS','TRUMP-PUTIN-XI SUMMIT: FLAIR OVER SUBSTANCE', GREEN),
+ ('MIDEAST','SAUDI STRIKES HODEIDAH PORT', RED),
+ ('AFRICA','ETHIOPIA-ERITREA BORDER FIRE FLARES', RED),
+ ('AFRICA','SUDAN: 2230 CIVILIANS KILLED IN 2026 - UN', RED),
+ ('ASIA','CHINA Q3 GDP +4.5% BEATS FORECASTS', YELLOW),
+ ('AMERICAS','JIO IPO DRAWS 22X DEMAND', GREEN),
+ ('EUROPE','DENMARK EXPPELS RUSSIAN ATTACHE', BLUE),
+ ('MIDEAST','US DENIES IRAN F-16 CLAIM', RED),
+ ('ASIA','JAPAN WEIGHS 60T YEN DEFENSE PLAN', YELLOW),
+ ('AMERICAS','FED HOLDS 3.75-4% IN 10-2 VOTE', GREEN),
+ ('EUROPE','FRANCE SPREADS WIDEN ON FISCAL WORRY', BLUE),
+ ('ASIA','KOSPI -5.2%, NIKKEI 6-MONTH LOW', YELLOW),
 ]
-cols = 5
-colw = (CW - (cols-1)*8*SS)//cols
-col_x = [M + i*(colw+8*SS) for i in range(cols)]
+cols = 4
+colw = (CW - (cols-1)*10*SS)//cols
+col_x = [M + i*(colw+10*SS) for i in range(cols)]
+BRIEF = 4*SS
 def story_lines(story, size):
     words = story.split(); lines = []; linebuf = ''
     for w_ in words:
@@ -351,8 +352,8 @@ def emit(stories):
     for idx,(tag, story, tc) in enumerate(stories):
         c = idx % cols
         x = col_x[c]; yy = rowy[c]
-        yy += 3*SS*7 + 5*SS
-        yy += len(story_lines(story, 3*SS))*(3*SS*7 + 1*SS) + 3*SS
+        yy += 4*SS*7 + 5*SS
+        yy += len(story_lines(story, BRIEF))*(BRIEF*7 + 1*SS) + 4*SS
         rowy[c] = yy
     return max(rowy)
 n = len(stories)
@@ -363,12 +364,12 @@ rowy = [y]*cols
 for idx,(tag, story, tc) in enumerate(stories):
     c = idx % cols
     x = col_x[c]; yy = rowy[c]
-    rect(x, yy, x+text_w(tag,3*SS)+6*SS, yy+3*SS*7+4*SS, tc)
-    text(x+3*SS, yy+2*SS, tag, PAPER, 3*SS)
-    yy += 3*SS*7 + 5*SS
-    for ln in story_lines(story, 3*SS):
-        text(x, yy, ln, INK, 3*SS); yy += 3*SS*7 + 1*SS
-    yy += 3*SS
+    rect(x, yy, x+text_w(tag,4*SS)+6*SS, yy+4*SS*7+4*SS, tc)
+    text(x+3*SS, yy+2*SS, tag, PAPER, 4*SS)
+    yy += 4*SS*7 + 5*SS
+    for ln in story_lines(story, BRIEF):
+        text(x, yy, ln, INK, BRIEF); yy += BRIEF*7 + 1*SS
+    yy += 4*SS
     rowy[c] = yy
 grid_end = max(rowy)
 hline(M, SW-M, grid_end + 2*SS, INK, 2*SS)
