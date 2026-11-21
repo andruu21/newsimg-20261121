@@ -177,7 +177,7 @@ hline(M, SW-M, y, INK, SS); y += 4*SS
 # --- Kyiv hero (left 60%) : skyline with windows, missile trails, flashes ---
 hx0, hx1 = M, M + int(CW*0.60)
 hy0 = y
-hy1 = y + 150*SS
+hy1 = y + 186*SS
 rect(hx0, hy0, hx1, hy1, hex2rgb('#0e1226'))
 r = rng(21)
 horizon = hy1 - 22*SS
@@ -228,20 +228,21 @@ rx0 = hx1 + 10*SS
 rx1 = SW - M
 ry = y
 def statband(yy, label, value, vcol):
-    rect(rx0, yy, rx1, yy+20*SS, INK)
-    rect(rx0+SS, yy+SS, rx0+8*SS, yy+19*SS, vcol)
-    text(rx0+12*SS, yy+4*SS, label, PAPER, 3*SS)
-    vw = text_w(value, 5*SS)
-    lw = text_w(label, 3*SS)
-    if vw + lw + 20*SS <= (rx1-rx0):
-        right_text(rx1-4*SS, yy+1*SS, value, vcol, 5*SS)
-    return yy + 24*SS
+    BH = 26*SS
+    rect(rx0, yy, rx1, yy+BH, INK)
+    rect(rx0+SS, yy+SS, rx0+8*SS, yy+BH-SS, vcol)
+    vs = 3*SS
+    while text_w(value, vs) + text_w(label, 3*SS) + 28*SS > (rx1-rx0) and vs > SS:
+        vs -= SS
+    text(rx0+12*SS, yy+(BH-3*SS*7)//2, label, PAPER, 3*SS)
+    right_text(rx1-4*SS, yy+(BH-vs*7)//2, value, vcol, vs)
+    return yy + BH + 2*SS
 
 ry = statband(ry, 'NIKKEI', '-5.1%', RED)
-ry = statband(ry, 'S+P 500', '-2.9%', RED)
+ry = statband(ry, 'SP500', '-2.9%', RED)
 ry = statband(ry, 'NASDAQ', '-2.6%', RED)
-ry = statband(ry, 'BITCOIN', 'SUB $60K', RED)
-ry = statband(ry, 'BRENT OIL', '+1.4%', GREEN)
+ry = statband(ry, 'BTC', 'SUB $60K', RED)
+ry = statband(ry, 'BRENT', '+1.4%', GREEN)
 ry += 6*SS
 
 # Poland hero (map-ish): radar arcs + missile marks
@@ -276,7 +277,7 @@ def rtext(yy, s, c=GRAY, size=4*SS):
     return yy
 
 ry = py1 + 4*SS
-ry = rtext(ry, '2 MISSILES + A DRONE HIT NATO-AREA DRILLS') + 3*SS
+ry = rtext(ry, '2 MISSILES AND A DRONE HIT NEAR NATO DRILLS') + 3*SS
 hline(rx0, rx1, ry, RULE, SS); ry += 4*SS
 
 # Hormuz hero: tankers + flames on sea
@@ -299,7 +300,7 @@ lbl = '3 TANKERS HIT'
 rect(rx0+2*SS, ty0+2*SS, rx0+2*SS+text_w(lbl,3*SS)+4*SS, ty0+2*SS+3*SS*7+3*SS, DKRED)
 text(rx0+4*SS, ty0+3*SS, lbl, PAPER, 3*SS)
 ry = ty1 + 4*SS
-ry = rtext(ry, 'IRAN-US WAR: MQ-9 DOWNED; QATAR TALKS STALL') + 3*SS
+ry = rtext(ry, 'IRAN-US WAR: MQ-9 DRONE DOWNED. QATAR TALKS STALL') + 3*SS
 
 bottom_hero_end = max(hy1 + 3*SS + 3*SS*7, ry)
 y = bottom_hero_end + 4*SS
