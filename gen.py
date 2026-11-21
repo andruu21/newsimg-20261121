@@ -333,57 +333,106 @@ stories = [
  ('EUROPE','FRANCE SPREADS WIDEN ON FISCAL WORRY', BLUE),
  ('ASIA','KOSPI -5.2%, NIKKEI 6-MONTH LOW', YELLOW),
 ]
-cols = 3
-GUT = 12*SS
-colw = (CW - (cols-1)*GUT)//cols
-col_x = [M + i*(colw+GUT) for i in range(cols)]
 BRIEF = 4*SS
-# shrink size until the longest word fits the column
-while max(text_w(w_, BRIEF) for s2 in stories for w_ in s2[1].split()) > colw - 4*SS and BRIEF > SS:
-    BRIEF -= SS
-def story_lines(story, size):
-    words = story.split(); lines = []; linebuf = ''
+cols = 2
+GUT = 16*SS
+colw = (CW - GUT)//cols
+col_x = [M + i*(colw+GUT) for i in range(cols)]
+
+cards = [
+ ('MIDEAST', 'HOUTHI MISSILES AT RIYADH INTERCEPTED', '3RD DAY OF ALERTS ON SAUDI CAPITAL', RED, 'missiles'),
+ ('EUROPE', 'NATO: POLAND VIOLATION IS GRAVE', 'RUTTE TO VISIT WARSAW OVER MISSES', BLUE, 'shield'),
+ ('ASIA', 'GTA6 SELLS $3.79BN ON DAY ONE', 'BIGGEST ENTERTAINMENT LAUNCH EVER', YELLOW, 'star'),
+ ('AMERICAS', 'FED HOLDS RATES AT 3.75-4 PCT', '10-2 VOTE, FEWER DECISIONS PLANNED', GREEN, 'bank'),
+]
+def card_icon(kind, x0, y0, s):
+    if kind == 'missiles':
+        for k in range(3):
+            bx = x0 + s*(2+k*4)
+            line(bx, y0+s*14, bx+s*2, y0+s*2, RED, 2*SS)
+            disc(bx+s*2, y0+s*2, s, RED)
+    elif kind == 'shield':
+        pts = [(0,0),(10,0),(10,7),(5,14),(0,7)]
+        for i in range(len(pts)):
+            line(x0+pts[i][0]*s, y0+pts[i][1]*s, x0+pts[(i+1)%len(pts)][0]*s, y0+pts[(i+1)%len(pts)][1]*s, BLUE, 2*SS)
+        line(x0+2*s, y0+7*s, x0+4*s, y0+9*s, BLUE, 2*SS)
+        line(x0+4*s, y0+9*s, x0+8*s, y0+3*s, BLUE, 2*SS)
+    elif kind == 'star':
+        cx, cy = x0+6*s, y0+7*s
+        for a in range(10):
+            r1 = 7*s if a%2==0 else 3*s
+            x2 = cx + int(r1*math.sin(a*math.pi/5))
+            y2 = cy - int(r1*math.cos(a*math.pi/5))
+            if a: line(px_, py_, x2, y2, hex2rgb('#a3781a'), 2*SS)
+            px_, py_ = x2, y2
+    elif kind == 'bank':
+        rect(x0, y0+12*s, x0+12*s, y0+14*s, GREEN)
+        for k in range(4):
+            rect(x0+k*3*s+SS, y0+5*s, x0+k*3*s+2*s, y0+12*s, GREEN)
+        for k in range(6):
+            line(x0+k*2.4*s, y0+2*s, x0+6*s, y0, GREEN, SS)
+
+def card_lines(head, hs):
+    words = head.split(); lines = []; lb = ''
     for w_ in words:
-        cand = (linebuf+' '+w_).strip()
-        if text_w(cand, size) > colw - 4*SS and linebuf:
-            lines.append(linebuf); linebuf = w_
-        else:
-            linebuf = cand
-    if linebuf: lines.append(linebuf)
+        cand = (lb+' '+w_).strip()
+        if text_w(cand, hs) > colw - 20*SS and lb:
+            lines.append(lb); lb = w_
+        else: lb = cand
+    if lb: lines.append(lb)
     return lines
-FOOT_H = 40*SS
-def emit(stories):
-    rowy = [y]*cols
-    for idx,(tag, story, tc) in enumerate(stories):
-        c = idx % cols
-        x = col_x[c]; yy = rowy[c]
-        yy += 4*SS*7 + 5*SS
-        yy += len(story_lines(story, BRIEF))*(BRIEF*7 + 1*SS) + 4*SS
-        rowy[c] = yy
-    return max(rowy)
-n = len(stories)
-while n > 8 and emit(stories[:n]) + FOOT_H > SH:
-    n -= 1
-stories = stories[:n]
-rowy = [y]*cols
-for idx,(tag, story, tc) in enumerate(stories):
+def card_height(head):
+    hs = 5*SS
+    n = len(card_lines(head, hs))
+    return BRIEF*7 + 6*SS + n*(hs*7 + 2*SS) + 2*SS + 3*SS*7 + 8*SS + 36*SS + 12*SS
+# reserve footer space
+FOOT_RES = 46*SS
+cards = [cd for cd in cards if True]
+rowy = [y, y]
+maxc = 0
+for idx,(tag, head, sub, tc, icon) in enumerate(cards):
     c = idx % cols
     x = col_x[c]; yy = rowy[c]
-    rect(x, yy, x+text_w(tag,BRIEF)+6*SS, yy+BRIEF*7+4*SS, tc)
-    text(x+3*SS, yy+2*SS, tag, PAPER, BRIEF)
-    yy += BRIEF*7 + 6*SS
-    for ln in story_lines(story, BRIEF):
-        text(x, yy, ln, INK, BRIEF); yy += BRIEF*7 + 2*SS
-    yy += 6*SS
-    # separator rule under each story
-    hline(x, x+colw, yy, RULE, SS)
-    yy += 6*SS
-    rowy[c] = yy
+    ch = card_height(head)
+    if yy + ch > SH - FOOT_RES:
+        continue
+    hs = 5*SS
+    rect(x, yy, x+colw, yy+ch, hex2rgb('#e6dfd0'))
+    rect(x, yy, x+colw, yy+BRIEF*7+6*SS, tc)
+    text(x+4*SS, yy+3*SS, tag, PAPER, BRIEF)
+    yy += BRIEF*7 + 8*SS
+    for ln in card_lines(head, hs):
+        text(x+14*SS, yy, ln, INK, hs); yy += hs*7 + 2*SS
+    yy += 2*SS
+    sbs = 3*SS
+    while text_w(sub, sbs) > colw - 24*SS and sbs > SS: sbs -= SS
+    if text_w(sub, sbs) > colw - 24*SS:
+        words = sub.split()
+        sub = ' '.join(words[:len(words)//2])
+        sbs = 3*SS
+        while text_w(sub, sbs) > colw - 24*SS and sbs > SS: sbs -= SS
+    text(x+14*SS, yy, sub, GRAY, sbs)
+    yy += sbs*7 + 6*SS
+    card_icon(icon, x+14*SS, yy, 3*SS)
+    rowy[c] = yy + 36*SS + 8*SS
 grid_end = max(rowy)
-# vertical panel rules between columns
-for c in range(1, cols):
-    vline(col_x[c] - GUT//2, y, grid_end, RULE, SS)
-hline(M, SW-M, grid_end + 2*SS, INK, 2*SS)
+# secondary briefs ticker rows
+sec = ['GTA6 SELLS $3.79BN DAY ONE - RECORD', 'FED HOLDS 3.75-4 PCT, 10-2 VOTE', 'ETHIOPIA-ERITREA BORDER FIRE FLARES', 'SUDAN: 2230 CIVILIANS KILLED IN 2026', 'CHINA Q3 GDP +4.5% BEATS FORECASTS', 'BRAZIL STOCKS -13.7% AFTER LULA WIN', 'NVIDIA -14% ON SEC PROBE REPORT', 'JAPAN GDP -0.1%, BOJ HIKE LIVE']
+sy = grid_end
+FOOT_NEED = 76*SS
+sec = sec[:max(0, (SH - FOOT_NEED - sy)//(3*SS*7 + 2*SS))*2]
+for i in range(0, len(sec), 2):
+    s1 = '- ' + sec[i]
+    sz1 = 3*SS
+    while text_w(s1, sz1) > colw and sz1 > SS: sz1 -= SS
+    text(M, sy, s1, INK, sz1)
+    if i+1 < len(sec):
+        s2 = '- ' + sec[i+1]
+        sz2 = 3*SS
+        while text_w(s2, sz2) > colw and sz2 > SS: sz2 -= SS
+        text(M + colw + GUT, sy, s2, INK, sz2)
+    sy += 3*SS*7 + 2*SS
+grid_end = sy
 
 # footer: main ticker band
 fy = grid_end + 8*SS
@@ -391,6 +440,7 @@ rect(M, fy, SW-M, fy+18*SS, INK)
 tick = 'IN BRIEF: HORMUZ CHOKED - OIL UP - BITCOIN $57.9K - YEN 158.5 - AI ROUT TOKYO TO WALL ST'
 ts = fit_text(M+8*SS, fy+4*SS, tick, YELLOW, 3*SS, CW-16*SS)
 fy += ts*7 + 12*SS
+if fy + 3*SS*7 + 4*SS > SH: fy = SH - 4*SS*7 - 8*SS
 right_text(SW-M, fy, 'PAGE ONE - NOVEMBER 21, 2026', GRAY, 3*SS)
 
 # ---- downsample 4x with box filter ----
