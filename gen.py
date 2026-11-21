@@ -332,15 +332,19 @@ stories = [
  ('EUROPE','FRANCE SPREADS WIDEN ON FISCAL WORRY', BLUE),
  ('ASIA','KOSPI -5.2%, NIKKEI 6-MONTH LOW', YELLOW),
 ]
-cols = 4
-colw = (CW - (cols-1)*10*SS)//cols
-col_x = [M + i*(colw+10*SS) for i in range(cols)]
+cols = 3
+GUT = 12*SS
+colw = (CW - (cols-1)*GUT)//cols
+col_x = [M + i*(colw+GUT) for i in range(cols)]
 BRIEF = 4*SS
+# shrink size until the longest word fits the column
+while max(text_w(w_, BRIEF) for s2 in stories for w_ in s2[1].split()) > colw - 4*SS and BRIEF > SS:
+    BRIEF -= SS
 def story_lines(story, size):
     words = story.split(); lines = []; linebuf = ''
     for w_ in words:
         cand = (linebuf+' '+w_).strip()
-        if text_w(cand, size) > colw - 2*SS and linebuf:
+        if text_w(cand, size) > colw - 4*SS and linebuf:
             lines.append(linebuf); linebuf = w_
         else:
             linebuf = cand
@@ -364,14 +368,20 @@ rowy = [y]*cols
 for idx,(tag, story, tc) in enumerate(stories):
     c = idx % cols
     x = col_x[c]; yy = rowy[c]
-    rect(x, yy, x+text_w(tag,4*SS)+6*SS, yy+4*SS*7+4*SS, tc)
-    text(x+3*SS, yy+2*SS, tag, PAPER, 4*SS)
-    yy += 4*SS*7 + 5*SS
+    rect(x, yy, x+text_w(tag,BRIEF)+6*SS, yy+BRIEF*7+4*SS, tc)
+    text(x+3*SS, yy+2*SS, tag, PAPER, BRIEF)
+    yy += BRIEF*7 + 6*SS
     for ln in story_lines(story, BRIEF):
-        text(x, yy, ln, INK, BRIEF); yy += BRIEF*7 + 1*SS
-    yy += 4*SS
+        text(x, yy, ln, INK, BRIEF); yy += BRIEF*7 + 2*SS
+    yy += 6*SS
+    # separator rule under each story
+    hline(x, x+colw, yy, RULE, SS)
+    yy += 6*SS
     rowy[c] = yy
 grid_end = max(rowy)
+# vertical panel rules between columns
+for c in range(1, cols):
+    vline(col_x[c] - GUT//2, y, grid_end, RULE, SS)
 hline(M, SW-M, grid_end + 2*SS, INK, 2*SS)
 
 # footer: main ticker band
