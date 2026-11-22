@@ -353,13 +353,13 @@ card(M, by2, bw, pw2)
 CARD_BOTTOM = by2 + pw2
 d.text((M + 8 * S, by2 + 5 * S), "THE DAY AT A GLANCE", font=serifb(10), fill=INK)
 regions = [
-    ("EUROPE", "1 · 2 · 3 · 4 · 7 · 8 · 10 · 11"),
-    ("MIDEAST", "3 · 6 · 9 · 12 · 14 · 16 · 17"),
-    ("ASIA", "4 · 5 · 13 · 15 · 18 · 19"),
-    ("NORTH AMERICA", "5 · 16 · 20 · 21"),
-    ("LATIN AMERICA", "22"),
-    ("AFRICA", "13 · 19 · 20"),
-    ("OCEANIA", "18 · 21"),
+    ("EUROPE", "1 · 7 · 14 · 15 · 22 (Berlin) · 23 (EU)"),
+    ("MIDEAST", "2 · 3 · 6 · 8 · 9 · 16 (Tehran) · 17 (Gulf) · 21"),
+    ("ASIA", "4 · 10 · 11 · 12 · 18 (Tokyo) · 19 (Beijing) · 26 (Khartoum)"),
+    ("NORTH AMERICA", "5 · 13 (Miami) · 14 (Washington) · 16 · 20 · 22"),
+    ("LATIN AMERICA", "15 (Peru) · 21 (Sinaloa)"),
+    ("AFRICA", "13 · 26 · 27 (Addis)"),
+    ("OCEANIA", "20 (Sydney) · 28 (Australia–China AI talks)"),
 ]
 yy = by2 + 20 * S
 rh = (pw2 - 40 * S) // 7
@@ -375,13 +375,21 @@ dx0 = M + bw + 10 * S
 d.rectangle([dx0, by2, PX - M, CARD_BOTTOM], outline=RED, width=2 * S)
 d.text((dx0 + 10 * S, by2 + 5 * S), "DATE CHECK", font=serifb(10), fill=RED)
 para(dx0 + 10 * S, by2 + 20 * S,
-     "First reported Friday, so not counted as Saturday news here: the Nikkei's 3,008-point fall and "
-     "Anthropic's $83 pricing. COP31's outcome text is due over the weekend.",
+     "Left out as Friday 20 November's news: the Nikkei's 3,008-point fall, Anthropic's $83 pricing, "
+     "Wall Street's slide into a correction, and Cyclone Akvan's landfall. COP31's outcome text is due "
+     "over the weekend. Older still: Voyager 1's one-light-day snapshot (18 Nov).",
      serif(7.6), PX - M - dx0 - 20 * S, MUTED, lh=9 * S)
-para(dx0 + 10 * S, by2 + 52 * S,
-     "Every story happened, or was first reported, on 21 November 2026 in at least one time zone; claims "
-     "are as reported and attributed. Sources: AP, Reuters, Al Jazeera, Xinhua, Kyodo, UKMTO, SPA, SBS, "
-     "Addis Standard — original drawing, made in code.",
+para(dx0 + 10 * S, by2 + 76 * S,
+     "Why Saturday 21 November 2026: every story here happened, or was first reported, on that date in at "
+     "least one time zone; officials' counts and combatants' claims are kept and labelled as claims.",
+     serif(7.6), PX - M - dx0 - 20 * S, MUTED, lh=9 * S)
+para(dx0 + 10 * S, by2 + 108 * S,
+     "How to read it: the three hero panels carry the day's wars; the card grid adds markets, diplomacy "
+     "and sport; the 22-line list below completes the count of 35 across 7 regions and 18 fields.",
+     serif(7.6), PX - M - dx0 - 20 * S, MUTED, lh=9 * S)
+para(dx0 + 10 * S, by2 + 140 * S,
+     "Sources: AP, Reuters, Al Jazeera, Xinhua, Kyodo, UKMTO, SPA, SBS, Addis Standard — original drawing, "
+     "made in code.",
      serifit(7.2), PX - M - dx0 - 20 * S, MUTED, lh=9 * S)
 
 # footer
